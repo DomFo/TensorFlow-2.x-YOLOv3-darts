@@ -73,6 +73,7 @@ def load_yolo_weights(model, weights_file):
 
         assert len(wf.read()) == 0, 'failed to read all data'
 
+
 def Load_Yolo_model():
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if len(gpus) > 0:
@@ -438,16 +439,23 @@ def detect_video_realtime_mp(video_path, output_path, input_size=416, show=False
 
     cv2.destroyAllWindows()
 
-def detect_video(Yolo, video_path, output_path, input_size=416, show=False, CLASSES=YOLO_COCO_CLASSES, score_threshold=0.3, iou_threshold=0.45, rectangle_colors=''):
+
+def detect_video(Yolo, video_path, output_path, input_size=416, show=False, CLASSES=YOLO_COCO_CLASSES,
+                 score_threshold=0.3, iou_threshold=0.45, rectangle_colors='', rotate90=False):
     times, times_2 = [], []
     vid = cv2.VideoCapture(video_path)
 
     # by default VideoCapture returns float instead of int
-    width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    if not rotate90:
+        width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    else:
+        width = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        height = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
+
     fps = int(vid.get(cv2.CAP_PROP_FPS))
     codec = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter(output_path, codec, fps, (width, height)) # output_path must be .mp4
+    out = cv2.VideoWriter(output_path, codec, fps, (width, height))  # output_path must be .mp4
 
     while True:
         _, img = vid.read()
@@ -455,7 +463,8 @@ def detect_video(Yolo, video_path, output_path, input_size=416, show=False, CLAS
         try:
             original_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
-            # original_image = cv2.rotate(original_image, cv2.ROTATE_90_CLOCKWISE)  # not THAT easy
+            if rotate90:
+                original_image = cv2.rotate(original_image, cv2.ROTATE_90_CLOCKWISE)
         except:
             break
 

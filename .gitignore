@@ -1,2 +1,7 @@
 venv
 darts
+checkpoints
+model_data
+log
+mAP
+.idea

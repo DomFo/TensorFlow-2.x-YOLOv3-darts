@@ -17,7 +17,7 @@ YOLO_V4_WEIGHTS             = "model_data/yolov4.weights"
 YOLO_V3_TINY_WEIGHTS        = "model_data/yolov3-tiny.weights"
 YOLO_V4_TINY_WEIGHTS        = "model_data/yolov4-tiny.weights"
 YOLO_TRT_QUANTIZE_MODE      = "INT8" # INT8, FP16, FP32
-YOLO_CUSTOM_WEIGHTS         = False # "checkpoints/yolov3_custom" # used in evaluate_mAP.py and custom model detection, if not using leave False
+YOLO_CUSTOM_WEIGHTS         = f"checkpoints/{YOLO_TYPE}_darts" # used in evaluate_mAP.py and custom model detection, if not using leave False
                             # YOLO_CUSTOM_WEIGHTS also used with TensorRT and custom model detection
 YOLO_COCO_CLASSES           = "model_data/coco/coco.names"
 YOLO_STRIDES                = [8, 16, 32]
@@ -35,13 +35,13 @@ if YOLO_TYPE                == "yolov3":
                                [[116, 90], [156, 198], [373, 326]]]
 # Train options
 TRAIN_YOLO_TINY             = False
-TRAIN_SAVE_BEST_ONLY        = True # saves only best model according validation loss (True recommended)
+TRAIN_SAVE_BEST_ONLY        = True  # saves only best model according validation loss (True recommended)
 TRAIN_SAVE_CHECKPOINT       = False # saves all best validated checkpoints in training process (may require a lot disk space) (False recommended)
 TRAIN_CLASSES               = "darts/darts.names"
 TRAIN_ANNOT_PATH            = "darts/darts_train.txt"
-TRAIN_LOGDIR                = "log"
+TRAIN_LOGDIR                = "log/train"
 TRAIN_CHECKPOINTS_FOLDER    = "checkpoints"
-TRAIN_MODEL_NAME            = f"{YOLO_TYPE}_custom"
+TRAIN_MODEL_NAME            = f"{YOLO_TYPE}_darts"
 TRAIN_LOAD_IMAGES_TO_RAM    = True # With True faster training, but need more RAM
 TRAIN_BATCH_SIZE            = 4
 TRAIN_INPUT_SIZE            = 416
@@ -61,6 +61,7 @@ TEST_DATA_AUG               = False
 TEST_DECTECTED_IMAGE_PATH   = ""
 TEST_SCORE_THRESHOLD        = 0.3
 TEST_IOU_THRESHOLD          = 0.45
+TEST_LOGDIR                 = "log/val"
 
 
 #YOLOv3-TINY and YOLOv4-TINY WORKAROUND

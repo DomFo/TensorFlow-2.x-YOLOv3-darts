@@ -39,6 +39,7 @@ def main():
         except RuntimeError: pass
 
     if os.path.exists(TRAIN_LOGDIR): shutil.rmtree(TRAIN_LOGDIR)
+    if os.path.exists(TEST_LOGDIR): shutil.rmtree(TEST_LOGDIR)
     writer = tf.summary.create_file_writer(TRAIN_LOGDIR)
 
     trainset = Dataset('train')
@@ -104,16 +105,16 @@ def main():
 
             # writing summary data
             with writer.as_default():
-                tf.summary.scalar("lr", optimizer.lr, step=global_steps)
-                tf.summary.scalar("loss/total_loss", total_loss, step=global_steps)
-                tf.summary.scalar("loss/giou_loss", giou_loss, step=global_steps)
-                tf.summary.scalar("loss/conf_loss", conf_loss, step=global_steps)
-                tf.summary.scalar("loss/prob_loss", prob_loss, step=global_steps)
+                tf.summary.scalar("lr/train", optimizer.lr, step=global_steps)
+                tf.summary.scalar("loss/total_train", total_loss, step=global_steps)
+                tf.summary.scalar("loss/giou_train", giou_loss, step=global_steps)
+                tf.summary.scalar("loss/conf_train", conf_loss, step=global_steps)
+                tf.summary.scalar("loss/prob_train", prob_loss, step=global_steps)
             writer.flush()
             
         return global_steps.numpy(), optimizer.lr.numpy(), giou_loss.numpy(), conf_loss.numpy(), prob_loss.numpy(), total_loss.numpy()
 
-    validate_writer = tf.summary.create_file_writer(TRAIN_LOGDIR)
+    validate_writer = tf.summary.create_file_writer(TEST_LOGDIR)
     def validate_step(image_data, target):
         with tf.GradientTape() as tape:
             pred_result = yolo(image_data, training=False)
@@ -132,9 +133,9 @@ def main():
             
         return giou_loss.numpy(), conf_loss.numpy(), prob_loss.numpy(), total_loss.numpy()
 
-    mAP_model = Create_Yolo(input_size=YOLO_INPUT_SIZE, CLASSES=TRAIN_CLASSES) # create second model to measure mAP
+    mAP_model = Create_Yolo(input_size=YOLO_INPUT_SIZE, CLASSES=TRAIN_CLASSES)  # create second model to measure mAP
 
-    best_val_loss = 1000 # should be large at start
+    best_val_loss = 1000  # should be large at start
     for epoch in range(TRAIN_EPOCHS):
         for image_data, target in trainset:
             results = train_step(image_data, target)
@@ -157,10 +158,10 @@ def main():
             total_val += results[3]
         # writing validate summary data
         with validate_writer.as_default():
-            tf.summary.scalar("validate_loss/total_val", total_val/count, step=epoch)
-            tf.summary.scalar("validate_loss/giou_val", giou_val/count, step=epoch)
-            tf.summary.scalar("validate_loss/conf_val", conf_val/count, step=epoch)
-            tf.summary.scalar("validate_loss/prob_val", prob_val/count, step=epoch)
+            tf.summary.scalar("loss/total_val", total_val/count, step=epoch)
+            tf.summary.scalar("loss/giou_val", giou_val/count, step=epoch)
+            tf.summary.scalar("loss/conf_val", conf_val/count, step=epoch)
+            tf.summary.scalar("loss/prob_val", prob_val/count, step=epoch)
         validate_writer.flush()
             
         print("\n\ngiou_val_loss:{:7.2f}, conf_val_loss:{:7.2f}, prob_val_loss:{:7.2f}, total_val_loss:{:7.2f}\n\n".
