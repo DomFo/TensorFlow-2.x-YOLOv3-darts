@@ -53,6 +53,15 @@ class Dataset(object):
             line = annotation.split()
             image_path, index = "", 1
             for i, one_line in enumerate(line):
+                # quick and dirty for docker
+                if "/home/dominikfohrmann/github/TensorFlow-2.x-YOLOv3-darts/" in one_line:
+                    one_line = one_line.replace("/home/dominikfohrmann/github/TensorFlow-2.x-YOLOv3-darts/", "/tmp/")
+                # TODO: handle this properly!
+                # for dart images downloaded from docker
+                elif ".rf." in one_line:
+                    subfolder = f'darts_{dataset_type}'
+                    one_line = os.path.join("/tmp", "darts", subfolder, one_line)
+
                 if not one_line.replace(",","").isnumeric():
                     if image_path != "": image_path += " "
                     image_path += one_line

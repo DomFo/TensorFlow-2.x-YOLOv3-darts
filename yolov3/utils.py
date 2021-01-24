@@ -280,6 +280,7 @@ def postprocess_boxes(pred_bbox, original_image, input_size, score_threshold):
 
 def detect_image(Yolo, image_path, output_path, input_size=416, show=False, CLASSES=YOLO_COCO_CLASSES, score_threshold=0.3, iou_threshold=0.45, rectangle_colors=''):
     original_image      = cv2.imread(image_path)
+    print(original_image.shape)
     original_image      = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
     original_image      = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
 
@@ -302,6 +303,8 @@ def detect_image(Yolo, image_path, output_path, input_size=416, show=False, CLAS
     bboxes = postprocess_boxes(pred_bbox, original_image, input_size, score_threshold)
     bboxes = nms(bboxes, iou_threshold, method='nms')
 
+    print(f'n bboxes found: {len(bboxes)}')
+
     image = draw_bbox(original_image, bboxes, CLASSES=CLASSES, rectangle_colors=rectangle_colors)
     # CreateXMLfile("XML_Detections", str(int(time.time())), original_image, bboxes, read_class_names(CLASSES))
 
@@ -313,7 +316,8 @@ def detect_image(Yolo, image_path, output_path, input_size=416, show=False, CLAS
         cv2.waitKey(0)
         # To close the window after the required kill value was provided
         cv2.destroyAllWindows()
-        
+
+    dummy  = 1
     return image
 
 def Predict_bbox_mp(Frames_data, Predicted_data, Processing_times):
@@ -451,6 +455,7 @@ def detect_video(Yolo, video_path, output_path, input_size=416, show=False, CLAS
         try:
             original_image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+            # original_image = cv2.rotate(original_image, cv2.ROTATE_90_CLOCKWISE)  # not THAT easy
         except:
             break
 
@@ -459,7 +464,8 @@ def detect_video(Yolo, video_path, output_path, input_size=416, show=False, CLAS
 
         t1 = time.time()
         if YOLO_FRAMEWORK == "tf":
-            pred_bbox = Yolo.predict(image_data)
+            # pred_bbox = Yolo.predict(image_data)
+            pred_bbox = Yolo(image_data)
         elif YOLO_FRAMEWORK == "trt":
             batched_input = tf.constant(image_data)
             result = Yolo(batched_input)
@@ -527,7 +533,7 @@ def detect_realtime(Yolo, output_path, input_size=416, show=False, CLASSES=YOLO_
 
         t1 = time.time()
         if YOLO_FRAMEWORK == "tf":
-            pred_bbox = Yolo.predict(image_data)
+            pred_bbox = Yolo(image_data)
         elif YOLO_FRAMEWORK == "trt":
             batched_input = tf.constant(image_data)
             result = Yolo(batched_input)
@@ -542,8 +548,11 @@ def detect_realtime(Yolo, output_path, input_size=416, show=False, CLASSES=YOLO_
         pred_bbox = tf.concat(pred_bbox, axis=0)
 
         bboxes = postprocess_boxes(pred_bbox, original_frame, input_size, score_threshold)
+        print(len(bboxes))
         bboxes = nms(bboxes, iou_threshold, method='nms')
-        
+
+        print(len(bboxes))
+
         times.append(t2-t1)
         times = times[-20:]
         
