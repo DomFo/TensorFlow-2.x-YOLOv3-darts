@@ -6,3 +6,4 @@ mAP
 .idea
 .tensorboard-info
 .X11-unix
+darts/data
