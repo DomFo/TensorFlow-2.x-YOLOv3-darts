@@ -43,7 +43,7 @@ TRAIN_LOGDIR                = "log/train"
 TRAIN_CHECKPOINTS_FOLDER    = "checkpoints"
 TRAIN_MODEL_NAME            = f"{YOLO_TYPE}_darts"
 TRAIN_LOAD_IMAGES_TO_RAM    = True # With True faster training, but need more RAM
-TRAIN_BATCH_SIZE            = 4
+TRAIN_BATCH_SIZE            = 2
 TRAIN_INPUT_SIZE            = 416
 TRAIN_DATA_AUG              = True
 TRAIN_TRANSFER              = True
@@ -55,7 +55,7 @@ TRAIN_EPOCHS                = 100
 
 # TEST options
 TEST_ANNOT_PATH             = "darts/data/darts_test.txt"
-TEST_BATCH_SIZE             = 4
+TEST_BATCH_SIZE             = 2
 TEST_INPUT_SIZE             = 416
 TEST_DATA_AUG               = False
 TEST_DECTECTED_IMAGE_PATH   = ""
