@@ -1,7 +1,8 @@
 venv
-darts
 checkpoints
 model_data
 log
 mAP
 .idea
+.tensorboard-info
+.X11-unix
